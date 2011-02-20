@@ -13,7 +13,7 @@ from ConfigParser import ConfigParser
 from window import MugshotWindow
 import os
 import urllib
-import xml.dom.minidom
+import xml.etree.ElementTree as ElementTree
 
 
 PROG_ROOT = os.path.dirname(os.path.realpath(__file__))
@@ -27,8 +27,9 @@ class Mugshot:
         self.read_config()
 
         # init window
-        self.hello = MugshotWindow(self)
-        self.hello.main()
+        #self.hello = MugshotWindow(self)
+        #self.hello.main()
+        self.get_status()
 
     def read_config(self):
         config = ConfigParser()
@@ -47,10 +48,16 @@ class Mugshot:
 
     def get_status(self):
         cruise_rss = urllib.urlopen(CRUISE_URL)
-        cruise_xml = xml.dom.minidom.parse(cruise_rss)
-        status = cruise_xml.getElementsByTagName('title')[1]
-        offender = cruise_xml.getElementsByTagName('description')
-        print cruise_rss.read()
+        cruise_xml = ElementTree.XML(cruise_rss.read())
+
+        # Path to the correct XML nodes. Individual implementations may vary
+        status = cruise_xml.find('channel/item/title')
+        offender = cruise_xml.find('channel/item/description')
+
+        # TODO: still need to parse status/offender out with regexes
+        print "status %s" % status.text
+        print "offender %s" % offender.text
+
 
 
 if __name__ == '__main__':
