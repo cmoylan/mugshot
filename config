@@ -1,0 +1,7 @@
+[cmoylan]
+name: chris moylan
+image: some/file/path
+
+[cweb]
+name: cassie web
+image: some/other/path
