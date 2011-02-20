@@ -14,6 +14,7 @@ from window import MugshotWindow
 import os
 import urllib
 import xml.etree.ElementTree as ElementTree
+import re
 
 
 PROG_ROOT = os.path.dirname(os.path.realpath(__file__))
@@ -24,7 +25,7 @@ CRUISE_URL = 'http://ccrb.tii.trb/projects/P2PContent.rss'
 class Mugshot:
 
     def __init__(self):
-        self.read_config()
+        #self.read_config()
 
         # init window
         #self.hello = MugshotWindow(self)
@@ -51,12 +52,18 @@ class Mugshot:
         cruise_xml = ElementTree.XML(cruise_rss.read())
 
         # Path to the correct XML nodes. Individual implementations may vary
-        status = cruise_xml.find('channel/item/title')
-        offender = cruise_xml.find('channel/item/description')
+        status = cruise_xml.find('channel/item/title').text
+        offender = cruise_xml.find('channel/item/description').text
 
-        # TODO: still need to parse status/offender out with regexes
-        print "status %s" % status.text
-        print "offender %s" % offender.text
+        # Parse out all of the noise with some regexes
+        status_re = re.search('build (\w+) (\w+)', status)
+        build = status_re.group(1)
+        status = status_re.group(2)
+        offender = re.search('committed by (\w+)', offender).group(1)
+
+        print "build: %s" % build
+        print "status: %s" % status
+        print "offender: %s" % offender
 
 
 
