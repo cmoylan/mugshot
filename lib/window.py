@@ -30,7 +30,7 @@ class MugshotWindow:
         self.window.maximize()
 
         # Create the containing element
-        self.container = gtk.Table(4, 2, False)
+        self.container = gtk.Table(5, 2, False)
         self.window.add(self.container)
         #col_1 = self.container.get_column_at_index(1)
         #col_1.width_request(0)
@@ -39,34 +39,40 @@ class MugshotWindow:
         reload_button = gtk.Button('Reload', gtk.STOCK_REFRESH)
         reload_button.connect('clicked', self.reload, None)
         #reload_button.set_size_request(0, 0)
-        self.container.attach(reload_button, 1, 2, 0, 1, xoptions=gtk.SHRINK, yoptions=gtk.SHRINK, ypadding=-1)
+        #self.container.attach(reload_button, 1, 2, 0, 1, xoptions=gtk.SHRINK, yoptions=gtk.SHRINK, ypadding=-1)
         reload_button.show()
 
-        # Create the build heading
+        # Row 1 --- build heading
         self.build_label = gtk.Label('Build: 123456789')
-        self.container.attach(self.build_label, 0, 1, 0, 1, xoptions=gtk.SHRINK, yoptions=gtk.SHRINK)
+        self.container.attach(self.build_label, 0, 2, 0, 1, xoptions=gtk.SHRINK, yoptions=gtk.SHRINK)
         self.build_label.show()
 
-        # Create the status heading
+        # Row 2 --- status heading
         self.status_label = gtk.Label('Status: GREEN')
         self.container.attach(self.status_label, 0, 2, 1, 2)
         self.status_label.show()
-        
 
-        # Create the image which will display the mugshot
+
+        # Row 3 --- image which will display the mugshot
         self.mug = gtk.Image()
         self.mug.set_from_file(PROG_ROOT + '/../images/arduino.jpg')
         self.container.attach(self.mug, 0, 2, 2, 3)
         self.mug.show()
 
-        # Create the offender
+        # Row 4 --- the offender
         self.offender_label = gtk.Label('chris moylan')
         self.offender_label.modify_font(pango.FontDescription('sans 48'))
         #self.offender_label.modify_fg(gtk.STATE_NORMAL, gtk.gdk.Color(65535,0,0))
         self.container.attach(self.offender_label, 0, 2, 3, 4)
         self.offender_label.show()
 
-        self.container.modify_fg(gtk.STATE_NORMAL, gtk.gdk.Color(65535,0,0))
+        # ROw 5 --- buttons
+        # Refresh
+        # Quit
+
+        # try to change the background color...
+        #self.container.modify_fg(gtk.STATE_NORMAL, gtk.gdk.Color(65535,0,0))
+
         # Create a timeout that will update the window at regular intervals
         # NOTE: This is deprecated, but the new way doesn't work
         #gtk.timeout_add(2000, self.obj.update_status)

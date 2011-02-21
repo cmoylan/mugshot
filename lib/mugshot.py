@@ -25,12 +25,17 @@ CRUISE_URL = 'http://ccrb.tii.trb/projects/P2PContent.rss'
 class Mugshot:
 
     def __init__(self):
+        # Read config
+        # Build data structure of offenders, names, images
+        # get status
+        # display the window
+
         #self.read_config()
 
         # init window
-        #self.hello = MugshotWindow(self)
-        #self.hello.main()
-        self.get_status()
+        self.hello = MugshotWindow(self)
+        self.hello.main()
+        #self.get_status()
 
     def read_config(self):
         config = ConfigParser()
@@ -44,7 +49,7 @@ class Mugshot:
             print config.get(section, 'image')
 
     def update_status(self):
-        print 'updating status'
+        #print 'updating status'
         self.hello.change_status('red', 'toast')
 
     def get_status(self):
@@ -61,9 +66,9 @@ class Mugshot:
         status = status_re.group(2)
         offender = re.search('committed by (\w+)', offender).group(1)
 
-        print "build: %s" % build
-        print "status: %s" % status
-        print "offender: %s" % offender
+        #print "build: %s" % build
+        #print "status: %s" % status
+        #print "offender: %s" % offender
 
 
 
