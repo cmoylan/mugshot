@@ -3,6 +3,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import pango
 from os import path
 
 PROG_ROOT = path.dirname(path.realpath(__file__))
@@ -29,18 +30,21 @@ class MugshotWindow:
         self.window.maximize()
 
         # Create the containing element
-        self.container = gtk.Table(rows=4, columns=2)
+        self.container = gtk.Table(4, 2, False)
         self.window.add(self.container)
+        #col_1 = self.container.get_column_at_index(1)
+        #col_1.width_request(0)
 
         # Create a reload button and pack it into the box container
-        reload_button = gtk.Button('Reload')
+        reload_button = gtk.Button('Reload', gtk.STOCK_REFRESH)
         reload_button.connect('clicked', self.reload, None)
-        self.container.attach(reload_button, 1, 2, 0, 1)
+        #reload_button.set_size_request(0, 0)
+        self.container.attach(reload_button, 1, 2, 0, 1, xoptions=gtk.SHRINK, yoptions=gtk.SHRINK, ypadding=-1)
         reload_button.show()
 
         # Create the build heading
         self.build_label = gtk.Label('Build: 123456789')
-        self.container.attach(self.build_label, 0, 1, 0, 1)
+        self.container.attach(self.build_label, 0, 1, 0, 1, xoptions=gtk.SHRINK, yoptions=gtk.SHRINK)
         self.build_label.show()
 
         # Create the status heading
@@ -57,9 +61,12 @@ class MugshotWindow:
 
         # Create the offender
         self.offender_label = gtk.Label('chris moylan')
+        self.offender_label.modify_font(pango.FontDescription('sans 48'))
+        #self.offender_label.modify_fg(gtk.STATE_NORMAL, gtk.gdk.Color(65535,0,0))
         self.container.attach(self.offender_label, 0, 2, 3, 4)
         self.offender_label.show()
 
+        self.container.modify_fg(gtk.STATE_NORMAL, gtk.gdk.Color(65535,0,0))
         # Create a timeout that will update the window at regular intervals
         # NOTE: This is deprecated, but the new way doesn't work
         #gtk.timeout_add(2000, self.obj.update_status)
