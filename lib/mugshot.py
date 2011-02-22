@@ -18,19 +18,20 @@ import re
 
 
 PROG_ROOT = os.path.dirname(os.path.realpath(__file__))
-CONFIG_FILE = 'config'
+OFFENDERS_FILE = 'offenders.cfg'
 CRUISE_URL = 'http://ccrb.tii.trb/projects/P2PContent.rss'
 
 
 class Mugshot:
 
     def __init__(self):
-        # Read config
-        # Build data structure of offenders, names, images
+        # Create the offenders list
+        self.offenders = {}
+        self.read_config()
+        print self.offenders
+
         # get status
         # display the window
-
-        #self.read_config()
 
         # init window
         self.hello = MugshotWindow(self)
@@ -39,14 +40,17 @@ class Mugshot:
 
     def read_config(self):
         config = ConfigParser()
-        config.readfp(open(PROG_ROOT + '/../' + CONFIG_FILE))
-        print config.sections()
-        print '-------------------'
-        for section in config.sections():
-            print section
-            #print config.items(section)
-            print config.get(section, 'name')
-            print config.get(section, 'image')
+        config.readfp(open(PROG_ROOT + '/../config/' + OFFENDERS_FILE))
+        #print config.sections()
+        #print '-------------------'
+        for user in config.sections():
+            self.offenders[user] = {
+                'name': config.get(user, 'name'),
+                'image': config.get(user, 'image')
+            }
+            #print user
+            #print config.get(user, 'name')
+            #print config.get(user, 'image')
 
     def update_status(self):
         #print 'updating status'
