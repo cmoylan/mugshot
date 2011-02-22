@@ -40,46 +40,45 @@ class MugshotWindow:
         reload_button.connect('clicked', self.reload, None)
         #reload_button.set_size_request(0, 0)
         #self.container.attach(reload_button, 1, 2, 0, 1, xoptions=gtk.SHRINK, yoptions=gtk.SHRINK, ypadding=-1)
-        reload_button.show()
 
         # Row 1 --- build heading
         self.build_label = gtk.Label('Build: 123456789')
-        self.container.attach(self.build_label, 0, 2, 0, 1, xoptions=gtk.SHRINK, yoptions=gtk.SHRINK)
-        self.build_label.show()
+        self.container.attach(self.build_label, 0, 2, 0, 1, yoptions=gtk.SHRINK)
 
         # Row 2 --- status heading
         self.status_label = gtk.Label('Status: GREEN')
-        self.container.attach(self.status_label, 0, 2, 1, 2)
-        self.status_label.show()
+        self.container.attach(self.status_label, 0, 2, 1, 2, yoptions=gtk.SHRINK)
 
 
         # Row 3 --- image which will display the mugshot
         self.mug = gtk.Image()
         self.mug.set_from_file(PROG_ROOT + '/../images/arduino.jpg')
         self.container.attach(self.mug, 0, 2, 2, 3)
-        self.mug.show()
 
         # Row 4 --- the offender
         self.offender_label = gtk.Label('chris moylan')
         self.offender_label.modify_font(pango.FontDescription('sans 48'))
         #self.offender_label.modify_fg(gtk.STATE_NORMAL, gtk.gdk.Color(65535,0,0))
-        self.container.attach(self.offender_label, 0, 2, 3, 4)
-        self.offender_label.show()
+        self.container.attach(self.offender_label, 0, 2, 3, 4, yoptions=gtk.SHRINK)
 
         # ROw 5 --- buttons
+        fixed = gtk.Fixed()
         # Refresh
+        fixed.put(reload_button, 0, 0)
+        self.container.attach(fixed, 0, 2, 4, 5, yoptions=gtk.SHRINK)
         # Quit
 
-        # try to change the background color...
-        #self.container.modify_fg(gtk.STATE_NORMAL, gtk.gdk.Color(65535,0,0))
+        # Change the window background color
+        #self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(65535, 0, 0)) # red
+        #self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0, 65535, 0)) # green
 
         # Create a timeout that will update the window at regular intervals
         # NOTE: This is deprecated, but the new way doesn't work
         #gtk.timeout_add(2000, self.obj.update_status)
 
         # Display the remaining hidden UI elements
-        self.container.show()
-        self.window.show()
+        #self.container.show()
+        self.window.show_all()
 
 
     def main(self):
