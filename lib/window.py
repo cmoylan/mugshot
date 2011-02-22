@@ -46,8 +46,9 @@ class MugshotWindow:
         self.container.attach(self.build_label, 0, 2, 0, 1, yoptions=gtk.SHRINK)
 
         # Row 2 --- status heading
-        self.status_label = gtk.Label('Status: GREEN')
-        self.container.attach(self.status_label, 0, 2, 1, 2, yoptions=gtk.SHRINK)
+        self.status_label = gtk.Label('Status: Not Broken')
+        self.status_label.modify_font(pango.FontDescription('sans 24'))
+        self.container.attach(self.status_label, 0, 2, 1, 2)
 
 
         # Row 3 --- image which will display the mugshot
@@ -68,16 +69,11 @@ class MugshotWindow:
         self.container.attach(fixed, 0, 2, 4, 5, yoptions=gtk.SHRINK)
         # Quit
 
-        # Change the window background color
-        #self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(65535, 0, 0)) # red
-        #self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0, 65535, 0)) # green
-
         # Create a timeout that will update the window at regular intervals
         # NOTE: This is deprecated, but the new way doesn't work
         #gtk.timeout_add(2000, self.obj.update_status)
 
         # Display the remaining hidden UI elements
-        #self.container.show()
         self.window.show_all()
 
 
@@ -111,12 +107,28 @@ class MugshotWindow:
 
 
     # --- Non-callback methods, called from the mugshot.py ---
-    def change_status(self, status, blame=None):
-        # If status is green, make the background green
-        # If status is red, make the background red and display blame image
-        if status == 'red':
-            self.mug.set_from_file(PROG_ROOT + '/../images/homemade-arduino-kindof.jpg')
-            self.mug.show()
+    def change_status(self, build, status, offender=None):
+        self.build_label.set_text("P2P.Content %s" % build)
+        self.status_label.set_text("Status: %s" % status)
+
+        if status == 'failed':
+            # If the buid has failed make the background red and show the offender
+            self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(65535, 0, 0)) # red
+            # display the offender image
+            # display full name
+            self.offender_label.set_text(offender)
+        elif status == 'success':
+            # If the build is successful, make the background green and display
+            # a success graphic
+            self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0, 65535, 0)) # green
+            # display success graphic
+            self.offender_label.set_text('')
         else:
-            pass
+            # If we get here, it's loading or something went wrong
+            # Display some loading graphic
+            self.offender_label.set_text('')
+            print 'WARNING: No status in Window#change_status!'
+
+
+
 

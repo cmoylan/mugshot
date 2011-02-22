@@ -23,26 +23,47 @@ CRUISE_URL = 'http://ccrb.tii.trb/projects/P2PContent.rss'
 
 
 class Mugshot:
+    """Mugshot
+
+    This program will display the image of the person responsible for
+    checking in buggy code.
+
+    Statuses:
+    broken -- some of the tests failed, the build is broken.
+    possibly_broken -- the build is running or the program is determining
+        who to blame.
+    not_broken -- all of the tests passed, the build is not broken.
+
+    """
 
     def __init__(self):
+        # Create some attributes
+        self.build = None
+        self.status = None
+        self.offender = None
+
         # Create the offenders list
         self.offenders = {}
         self.read_config()
-        print self.offenders
 
-        # get status
-        # display the window
+        # Set the initial status
+        initial = self.get_status()
+        self.build = initial['build']
+        self.status = initial['status']
+        self.offender = initial['offender']
 
-        # init window
-        self.hello = MugshotWindow(self)
-        self.hello.main()
-        #self.get_status()
+        print self.build
+        print self.status
+
+        # Initialize the window and hand over control to gtk.main()
+        #self.window = MugshotWindow(self)
+        #self.window.main()
+
 
     def read_config(self):
         config = ConfigParser()
         config.readfp(open(PROG_ROOT + '/../config/' + OFFENDERS_FILE))
-        #print config.sections()
-        #print '-------------------'
+
         for user in config.sections():
             self.offenders[user] = {
                 'name': config.get(user, 'name'),
@@ -52,11 +73,33 @@ class Mugshot:
             #print config.get(user, 'name')
             #print config.get(user, 'image')
 
+        return True
+
+
     def update_status(self):
-        #print 'updating status'
-        self.hello.change_status('red', 'toast')
+        if self.status is None:
+            # Something is wrong, it should never get here
+            print 'ERROR, ERROR: self.status is None...this should not happen'
+            return False
+
+        current_build = self.get_status()
+        if current_build['build'] == self.build:
+            # The build hasn't changed, do nothing more
+            return False
+
+        self.build = current_build['build']
+        self.status = current_build['status']
+        self.offender = current_build['offender']
+
+        # Update the window
+        self.window.change_status('red', 'toast')
+
+        return True
+
 
     def get_status(self):
+        # TODO: If multiple checkins are built together, there might be
+        # multiple regex matches. Hopefully the regex is not greedy
         cruise_rss = urllib.urlopen(CRUISE_URL)
         cruise_xml = ElementTree.XML(cruise_rss.read())
 
@@ -73,6 +116,13 @@ class Mugshot:
         #print "build: %s" % build
         #print "status: %s" % status
         #print "offender: %s" % offender
+
+        return {
+            'build': build,
+            'status': status,
+            'offender': offender
+        }
+
 
 
 
