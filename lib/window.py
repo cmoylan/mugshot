@@ -7,6 +7,8 @@ import pango
 from os import path
 
 PROG_ROOT = path.dirname(path.realpath(__file__))
+SUCCESS_IMAGE = ''
+LOAD_IMAGE = ''
 
 class MugshotWindow:
 
@@ -108,27 +110,43 @@ class MugshotWindow:
 
     # --- Non-callback methods, called from the mugshot.py ---
     def change_status(self, build, status, offender=None):
+        """Change the status of the Mugshot window
+
+        Arguments:
+        build -- the build number
+        status -- failed, success, or something else
+        offender -- SVN username of the build breaker (default None)
+
+        """
         self.build_label.set_text("P2P.Content %s" % build)
         self.status_label.set_text("Status: %s" % status)
 
         if status == 'failed':
             # If the buid has failed make the background red and show the offender
             self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(65535, 0, 0)) # red
-            # display the offender image
-            # display full name
-            self.offender_label.set_text(offender)
+
+            name = self.obj.offenders[offender]['name']
+            image = self.obj.offender[offender]['image']
+
+            self.mug.set_from_file(PROG_ROOT + '/../images/' + image)
+            self.offender_label.set_text(name)
+
         elif status == 'success':
             # If the build is successful, make the background green and display
             # a success graphic
             self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0, 65535, 0)) # green
-            # display success graphic
+
+            self.mug.set_from_file(PROG_ROOT + '/../images/' + SUCCESS_IMAGE)
             self.offender_label.set_text('')
+
         else:
-            # If we get here, it's loading or something went wrong
-            # Display some loading graphic
+            # If we get here, it's loading or something went wrong. Reset window
+            # color and display some loading graphic
+            self.window.modify_bg() # default
+
+            self.mug.set_from_file(PROG_ROOT + '/../images/' + LOADING_IMAGE)
             self.offender_label.set_text('')
+
             print 'WARNING: No status in Window#change_status!'
-
-
 
 
