@@ -11,7 +11,7 @@ IMAGE_ROOT = PROG_ROOT + '/../images/'
 SUCCESS_IMAGE = 'tick.png'
 LOAD_IMAGE = 'refresh.png'
 FAIL_IMAGE = 'cross.png'
-REFRESH_RATE = 30 # seconds
+REFRESH_RATE = 60 # seconds
 
 
 class MugshotWindow:
@@ -132,12 +132,13 @@ class MugshotWindow:
             try:
                 name = self.obj.offenders[offender]['name']
                 image = self.obj.offenders[offender]['image']
+                name = "Broken by: %s" % name
             except KeyError:
-                name = 'unknown'
+                name = 'Manually Requested Build'
                 image = FAIL_IMAGE
 
             self.mug.set_from_file(IMAGE_ROOT + image)
-            self.offender_label.set_text("Broken by: %s" % name)
+            self.offender_label.set_text(name)
 
         elif status == 'success':
             # If the build is successful, make the background green and display
