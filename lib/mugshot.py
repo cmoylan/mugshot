@@ -103,18 +103,27 @@ class Mugshot:
         cruise_xml = ElementTree.XML(cruise_rss.read())
 
         # Path to the correct XML nodes. Individual implementations may vary
-        status = cruise_xml.find('channel/item/title').text
-        offender = cruise_xml.find('channel/item/description').text
+        status_xml = cruise_xml.find('channel/item/title').text
+        offender_xml = cruise_xml.find('channel/item/description').text
 
         # Parse out all of the noise with some regexes
-        status_re = re.search('build (\w+) (\w+)', status)
-        build = status_re.group(1)
-        status = status_re.group(2)
-        offender = re.search('committed by (\w+)', offender).group(1)
+        status_re = re.search('build ([0-9]*\.[0-9]+|[0-9]+) (\w+)', status_xml)
 
-        #print "build: %s" % build
-        #print "status: %s" % status
-        #print "offender: %s" % offender
+        if status_re is not None:
+            build = status_re.group(1)
+            status = status_re.group(2)
+        else:
+            build = 'unknown'
+            status = 'unknown'
+
+        try:
+            offender = re.search('committed by (\w+)', offender_xml).group(1)
+        except:
+            offender = None
+
+        print "build: %s" % build
+        print "status: %s" % status
+        print "offender: %s" % offender
 
         return {
             'build': build,
