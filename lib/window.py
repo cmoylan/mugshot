@@ -7,8 +7,12 @@ import pango
 from os import path
 
 PROG_ROOT = path.dirname(path.realpath(__file__))
-SUCCESS_IMAGE = ''
-LOAD_IMAGE = ''
+IMAGE_ROOT = PROG_ROOT + '/../images/'
+SUCCESS_IMAGE = 'tick.png'
+LOAD_IMAGE = 'refresh.png'
+FAIL_IMAGE = 'cross.png'
+REFRESH_RATE = 30 # seconds
+
 
 class MugshotWindow:
 
@@ -26,42 +30,41 @@ class MugshotWindow:
         # Set basic window attributes
         self.window.set_border_width(10)
         self.window.set_title("Mugshot")
-        #red = gtk.gdk.color_parse('#000000')
-        #self.window.set_background(red)
-        # self.window.set_icon_from_file(some icon)
+        self.window.set_icon_from_file(IMAGE_ROOT + 'icon.png')
         self.window.maximize()
 
         # Create the containing element
         self.container = gtk.Table(5, 2, False)
         self.window.add(self.container)
-        #col_1 = self.container.get_column_at_index(1)
-        #col_1.width_request(0)
 
         # Create a reload button and pack it into the box container
         reload_button = gtk.Button('Reload', gtk.STOCK_REFRESH)
         reload_button.connect('clicked', self.reload, None)
-        #reload_button.set_size_request(0, 0)
-        #self.container.attach(reload_button, 1, 2, 0, 1, xoptions=gtk.SHRINK, yoptions=gtk.SHRINK, ypadding=-1)
 
         # Row 1 --- build heading
-        self.build_label = gtk.Label('Build: 123456789')
-        self.container.attach(self.build_label, 0, 2, 0, 1, yoptions=gtk.SHRINK)
+        self.build_label = gtk.Label('Build: ---')
+        self.build_label.modify_font(pango.FontDescription('sans 24'))
+        self.container.attach(self.build_label, 0, 2, 0, 1, yoptions=gtk.SHRINK, ypadding=5)
 
         # Row 2 --- status heading
-        self.status_label = gtk.Label('Status: Not Broken')
-        self.status_label.modify_font(pango.FontDescription('sans 24'))
-        self.container.attach(self.status_label, 0, 2, 1, 2)
+        self.status_label = gtk.Label('Status: ---')
+        self.status_label.modify_font(pango.FontDescription('sans 36'))
+        self.container.attach(self.status_label, 0, 2, 1, 2, yoptions=gtk.SHRINK)
 
 
         # Row 3 --- image which will display the mugshot
         self.mug = gtk.Image()
-        self.mug.set_from_file(PROG_ROOT + '/../images/arduino.jpg')
+        self.mug.set_from_file(IMAGE_ROOT + LOAD_IMAGE)
+        # TODO: get all this scaling crap working
+        #self.load_image = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB)
+        #gtk.gdk.pixbuf_new_from_file(PROG_ROOT + '/../images/' + LOAD_IMAGE) \
+        #    .scale(self.load_image, scale_y=400, interp_type=INTERP_BILINEAR)
+        #self.mug.set_from_pixbug(self.load_image)
         self.container.attach(self.mug, 0, 2, 2, 3)
 
         # Row 4 --- the offender
-        self.offender_label = gtk.Label('chris moylan')
+        self.offender_label = gtk.Label('---')
         self.offender_label.modify_font(pango.FontDescription('sans 48'))
-        #self.offender_label.modify_fg(gtk.STATE_NORMAL, gtk.gdk.Color(65535,0,0))
         self.container.attach(self.offender_label, 0, 2, 3, 4, yoptions=gtk.SHRINK)
 
         # ROw 5 --- buttons
@@ -73,9 +76,10 @@ class MugshotWindow:
 
         # Create a timeout that will update the window at regular intervals
         # NOTE: This is deprecated, but the new way doesn't work
-        #gtk.timeout_add(2000, self.obj.update_status)
+        gtk.timeout_add(REFRESH_RATE * 1000, self.obj.update_status)
+        #gtk.timeout_add(REFRESH_RATE * 1000, self.reload, None)
 
-        # Display the remaining hidden UI elements
+        # Show the window and let the public shaming begin
         self.window.show_all()
 
 
@@ -125,18 +129,22 @@ class MugshotWindow:
             # If the buid has failed make the background red and show the offender
             self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(65535, 0, 0)) # red
 
-            name = self.obj.offenders[offender]['name']
-            image = self.obj.offender[offender]['image']
+            try:
+                name = self.obj.offenders[offender]['name']
+                image = self.obj.offenders[offender]['image']
+            except KeyError:
+                name = 'unknown'
+                image = FAIL_IMAGE
 
-            self.mug.set_from_file(PROG_ROOT + '/../images/' + image)
-            self.offender_label.set_text(name)
+            self.mug.set_from_file(IMAGE_ROOT + image)
+            self.offender_label.set_text("Broken by: %s" % name)
 
         elif status == 'success':
             # If the build is successful, make the background green and display
             # a success graphic
             self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0, 65535, 0)) # green
 
-            self.mug.set_from_file(PROG_ROOT + '/../images/' + SUCCESS_IMAGE)
+            self.mug.set_from_file(IMAGE_ROOT + SUCCESS_IMAGE)
             self.offender_label.set_text('')
 
         else:
@@ -144,7 +152,7 @@ class MugshotWindow:
             # color and display some loading graphic
             self.window.modify_bg() # default
 
-            self.mug.set_from_file(PROG_ROOT + '/../images/' + LOADING_IMAGE)
+            self.mug.set_from_file(IMAGE_ROOT + LOADING_IMAGE)
             self.offender_label.set_text('')
 
             print 'WARNING: No status in Window#change_status!'

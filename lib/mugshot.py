@@ -52,12 +52,10 @@ class Mugshot:
         self.status = initial['status']
         self.offender = initial['offender']
 
-        print self.build
-        print self.status
-
         # Initialize the window and hand over control to gtk.main()
-        #self.window = MugshotWindow(self)
-        #self.window.main()
+        self.window = MugshotWindow(self)
+        self.update_status()
+        self.window.main()
 
 
     def read_config(self):
@@ -77,22 +75,23 @@ class Mugshot:
 
 
     def update_status(self):
+        print 'running update_status'
         if self.status is None:
             # Something is wrong, it should never get here
             print 'ERROR, ERROR: self.status is None...this should not happen'
             return False
 
         current_build = self.get_status()
-        if current_build['build'] == self.build:
+        #if current_build['build'] == self.build:
             # The build hasn't changed, do nothing more
-            return False
+            #return False
 
         self.build = current_build['build']
         self.status = current_build['status']
         self.offender = current_build['offender']
 
         # Update the window
-        self.window.change_status('red', 'toast')
+        self.window.change_status(self.build, self.status, self.offender)
 
         return True
 
