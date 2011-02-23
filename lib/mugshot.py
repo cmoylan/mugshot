@@ -4,6 +4,7 @@ from os import path
 import urllib
 import xml.etree.ElementTree as ElementTree
 import re
+#from time import sleep
 
 
 PROG_ROOT = path.dirname(path.realpath(__file__))
@@ -67,7 +68,6 @@ class Mugshot:
 
 
     def update_status(self):
-        print 'running update_status'
         if self.status is None:
             # Something is wrong, it should never get here
             print 'ERROR, ERROR: self.status is None...this should not happen'
@@ -123,6 +123,13 @@ class Mugshot:
             'status': status,
             'offender': offender
         }
+
+
+    def demo(self):
+        #for offender in self.offenders:
+            #self.window.change_status('*DEMO MODE*', 'failed', offender)
+            #sleep(2)
+        pass
 
 
 
