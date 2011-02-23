@@ -22,9 +22,16 @@ GREEN = gtk.gdk.color_parse('#00ff00')
 class MugshotWindow:
 
     def __init__(self, obj):
-        # sometimes the window needs to interact with the mugshot object.
-        # Therefore, make a reference back to the mugshot object from within
-        # the window class
+        """Initialize the Mugshot window
+
+        Required Arguments:
+        obj -- The calling object. This should always be an instance of
+            the MugShot class.
+
+        """
+
+        # Make a reference back to the calling object so that we can 
+        # interact with it.
         self.obj = obj
 
         # create a new window
@@ -42,10 +49,6 @@ class MugshotWindow:
         container = gtk.Table(5, 2, False)
         self.window.add(container)
 
-        # Create a reload button and pack it into the box container
-        reload_button = gtk.Button('Reload', gtk.STOCK_REFRESH)
-        reload_button.connect('clicked', self.reload, None)
-
         # Row 1 --- build heading
         self.build_label = gtk.Label('Build: ---')
         self.build_label.modify_fg(gtk.STATE_NORMAL, BLACK)
@@ -56,7 +59,6 @@ class MugshotWindow:
         self.status_label = gtk.Label('Status: ---')
         self.status_label.modify_fg(gtk.STATE_NORMAL, BLACK)
         self.status_label.modify_font(pango.FontDescription('sans 36'))
-        #self.status_label
         container.attach(self.status_label, 0, 2, 1, 2, yoptions=gtk.SHRINK)
 
 
@@ -77,11 +79,22 @@ class MugshotWindow:
         container.attach(self.offender_label, 0, 2, 3, 4, yoptions=gtk.SHRINK)
 
         # ROw 5 --- buttons
-        fixed = gtk.Fixed()
-        # Refresh
-        fixed.put(reload_button, 0, 0)
-        container.attach(fixed, 0, 2, 4, 5, yoptions=gtk.SHRINK)
+        box = gtk.HBox()
+        # Reload
+        reload_button = gtk.Button('Reload', gtk.STOCK_REFRESH)
+        reload_button.connect('clicked', self.reload, None)
+        box.pack_end(reload_button, False, False)
+        # Demo
+        #demo_button = gtk.Button('Demo')
+        #demo_button.connect('clicked', self.obj.demo, None)
+        #box.pack_end(demo_button, False, False, 5)
         # Quit
+        quit_button = gtk.Button('Quit', gtk.STOCK_QUIT)
+        quit_button.connect('clicked', self.destroy, None)
+        box.pack_end(quit_button, False, False, 5)
+
+        # Place box into table
+        container.attach(box, 0, 2, 4, 5, yoptions=gtk.SHRINK)
 
         # Create a timeout that will update the window at regular intervals
         # NOTE: This is deprecated, but the new way doesn't work
@@ -119,6 +132,10 @@ class MugshotWindow:
 
     def reload(self, widget, data=None):
         self.obj.update_status()
+
+
+    def demo(self, widget, data=None):
+        self.obj.demo()
 
 
     # --- Non-callback methods, called from the mugshot.py ---
