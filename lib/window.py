@@ -13,6 +13,11 @@ LOAD_IMAGE = 'refresh.png'
 FAIL_IMAGE = 'cross.png'
 REFRESH_RATE = 60 # seconds
 
+# Define colors
+BLACK = gtk.gdk.color_parse('#000')
+RED = gtk.gdk.color_parse('#ff0000')
+GREEN = gtk.gdk.color_parse('#00ff00')
+
 
 class MugshotWindow:
 
@@ -34,8 +39,8 @@ class MugshotWindow:
         self.window.maximize()
 
         # Create the containing element
-        self.container = gtk.Table(5, 2, False)
-        self.window.add(self.container)
+        container = gtk.Table(5, 2, False)
+        self.window.add(container)
 
         # Create a reload button and pack it into the box container
         reload_button = gtk.Button('Reload', gtk.STOCK_REFRESH)
@@ -43,13 +48,16 @@ class MugshotWindow:
 
         # Row 1 --- build heading
         self.build_label = gtk.Label('Build: ---')
+        self.build_label.modify_fg(gtk.STATE_NORMAL, BLACK)
         self.build_label.modify_font(pango.FontDescription('sans 24'))
-        self.container.attach(self.build_label, 0, 2, 0, 1, yoptions=gtk.SHRINK, ypadding=5)
+        container.attach(self.build_label, 0, 2, 0, 1, yoptions=gtk.SHRINK, ypadding=5)
 
         # Row 2 --- status heading
         self.status_label = gtk.Label('Status: ---')
+        self.status_label.modify_fg(gtk.STATE_NORMAL, BLACK)
         self.status_label.modify_font(pango.FontDescription('sans 36'))
-        self.container.attach(self.status_label, 0, 2, 1, 2, yoptions=gtk.SHRINK)
+        #self.status_label
+        container.attach(self.status_label, 0, 2, 1, 2, yoptions=gtk.SHRINK)
 
 
         # Row 3 --- image which will display the mugshot
@@ -60,18 +68,19 @@ class MugshotWindow:
         #gtk.gdk.pixbuf_new_from_file(PROG_ROOT + '/../images/' + LOAD_IMAGE) \
         #    .scale(self.load_image, scale_y=400, interp_type=INTERP_BILINEAR)
         #self.mug.set_from_pixbug(self.load_image)
-        self.container.attach(self.mug, 0, 2, 2, 3)
+        container.attach(self.mug, 0, 2, 2, 3)
 
         # Row 4 --- the offender
         self.offender_label = gtk.Label('---')
+        self.offender_label.modify_fg(gtk.STATE_NORMAL, BLACK)
         self.offender_label.modify_font(pango.FontDescription('sans 48'))
-        self.container.attach(self.offender_label, 0, 2, 3, 4, yoptions=gtk.SHRINK)
+        container.attach(self.offender_label, 0, 2, 3, 4, yoptions=gtk.SHRINK)
 
         # ROw 5 --- buttons
         fixed = gtk.Fixed()
         # Refresh
         fixed.put(reload_button, 0, 0)
-        self.container.attach(fixed, 0, 2, 4, 5, yoptions=gtk.SHRINK)
+        container.attach(fixed, 0, 2, 4, 5, yoptions=gtk.SHRINK)
         # Quit
 
         # Create a timeout that will update the window at regular intervals
@@ -127,7 +136,7 @@ class MugshotWindow:
 
         if status == 'failed':
             # If the buid has failed make the background red and show the offender
-            self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(65535, 0, 0)) # red
+            self.window.modify_bg(gtk.STATE_NORMAL, RED) # red
 
             try:
                 name = self.obj.offenders[offender]['name']
@@ -143,7 +152,7 @@ class MugshotWindow:
         elif status == 'success':
             # If the build is successful, make the background green and display
             # a success graphic
-            self.window.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0, 65535, 0)) # green
+            self.window.modify_bg(gtk.STATE_NORMAL, GREEN) # green
 
             self.mug.set_from_file(IMAGE_ROOT + SUCCESS_IMAGE)
             self.offender_label.set_text('')
