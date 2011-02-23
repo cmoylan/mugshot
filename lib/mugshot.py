@@ -1,38 +1,28 @@
-# What this file will do:
-#
-# read a config
-# create window
-# grab an rss feed at a regular interval
-# determine status of build
-# if the status is green, all is well
-# if its red, show picture of offender, from config
-#
-# if reload button is pressed, run do it all again
-
 from ConfigParser import ConfigParser
 from window import MugshotWindow
-import os
+from os import path
 import urllib
 import xml.etree.ElementTree as ElementTree
 import re
 
 
-PROG_ROOT = os.path.dirname(os.path.realpath(__file__))
+PROG_ROOT = path.dirname(path.realpath(__file__))
 OFFENDERS_FILE = 'offenders.cfg'
 CRUISE_URL = 'http://ccrb.tii.trb/projects/P2PContent.rss'
+DEBUG = False
 
 
 class Mugshot:
     """Mugshot
 
     This program will display the image of the person responsible for
-    checking in buggy code.
+    checking in buggy code. It's like CCMenu, but it hurts your feelings.
 
     Statuses:
-    broken -- some of the tests failed, the build is broken.
-    possibly_broken -- the build is running or the program is determining
+    success -- some of the tests failed, the build is broken.
+    unknown -- the build is running or the program is determining
         who to blame.
-    not_broken -- all of the tests passed, the build is not broken.
+    failed -- all of the tests passed, the build is not broken.
 
     """
 
@@ -44,7 +34,7 @@ class Mugshot:
 
         # Create the offenders list
         self.offenders = {}
-        self.read_config()
+        self.parse_offenders()
 
         # Set the initial status
         initial = self.get_status()
@@ -58,7 +48,7 @@ class Mugshot:
         self.window.main()
 
 
-    def read_config(self):
+    def parse_offenders(self):
         config = ConfigParser()
         config.readfp(open(PROG_ROOT + '/../config/' + OFFENDERS_FILE))
 
@@ -67,9 +57,11 @@ class Mugshot:
                 'name': config.get(user, 'name'),
                 'image': config.get(user, 'image')
             }
-            #print user
-            #print config.get(user, 'name')
-            #print config.get(user, 'image')
+
+            if DEBUG:
+                print user
+                print config.get(user, 'name')
+                print config.get(user, 'image')
 
         return True
 
@@ -121,9 +113,10 @@ class Mugshot:
         except:
             offender = None
 
-        print "build: %s" % build
-        print "status: %s" % status
-        print "offender: %s" % offender
+        if DEBUG:
+            print "build: %s" % build
+            print "status: %s" % status
+            print "offender: %s" % offender
 
         return {
             'build': build,
