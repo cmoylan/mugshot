@@ -12,6 +12,7 @@ for all to see.
 Mugshot uses Python and GTK via PyGTK.
 
 ## Usage
+python lib/mugshot.py
 
 ## Credits
 
