@@ -8,6 +8,7 @@ import re
 
 
 PROG_ROOT = path.dirname(path.realpath(__file__))
+CONFIG_FILE = 'options.cfg'
 OFFENDERS_FILE = 'offenders.cfg'
 CRUISE_URL = 'http://ccrb.tii.trb/projects/P2PContent.rss'
 DEBUG = False
@@ -47,6 +48,17 @@ class Mugshot:
         self.window = MugshotWindow(self)
         self.update_status()
         self.window.main()
+        #self.load_config()
+
+
+    def load_config(self):
+        config = ConfigParser()
+        config.readfp(open(PROG_ROOT + '/../config/' + CONFIG_FILE))
+
+        sections = config.sections()
+        print sections
+
+        # TODO: do it
 
 
     def parse_offenders(self):
