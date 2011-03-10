@@ -4,18 +4,21 @@ from os import path
 import urllib
 import xml.etree.ElementTree as ElementTree
 import re
+import random
 #from time import sleep
 
 
 PROG_ROOT = path.dirname(path.realpath(__file__))
+CONFIG_ROOT = PROG_ROOT + '/../config/'
 CONFIG_FILE = 'options.cfg'
 OFFENDERS_FILE = 'offenders.cfg'
-CRUISE_URL = 'http://ccrb.tii.trb/projects/P2PContent.rss'
 DEBUG = False
+
+CRUISE_URL = 'http://ccrb.tii.trb/projects/P2PContent.rss'
 
 
 class Mugshot:
-    """Mugshot
+    """Main Mugshot object
 
     This program will display the image of the person responsible for
     checking in buggy code. It's like CCMenu, but it hurts your feelings.
@@ -29,10 +32,19 @@ class Mugshot:
     """
 
     def __init__(self):
+        """Constructor
+
+        Get the build status and initialize the Window object
+
+        """
         # Create some attributes
+        self.options = {}
         self.build = None
         self.status = None
         self.offender = None
+
+        # Load the config
+        self.load_config()
 
         # Create the offenders list
         self.offenders = {}
@@ -48,22 +60,38 @@ class Mugshot:
         self.window = MugshotWindow(self)
         self.update_status()
         self.window.main()
-        #self.load_config()
+        self.load_config()
 
 
     def load_config(self):
+        """Load the config file and setup some instance variables
+
+        """
+        global CRUISE_URL
+
         config = ConfigParser()
         config.readfp(open(PROG_ROOT + '/../config/' + CONFIG_FILE))
 
         sections = config.sections()
         print sections
 
-        # TODO: do it
+        if 'settings' in sections:
+            CRUISE_URL = config.get('settings', 'cruise_url')
+
+        if 'images' in sections:
+            self.options['success_images'] = config.get('images', 'success').split(',')
+            self.options['fail_images'] = config.get('images', 'fail').split(',')
+            self.options['load_images'] = config.get('images', 'load').split(',')
 
 
     def parse_offenders(self):
+        """Generate the list of offenders
+
+        Looks up the offenders.ini file, and parses it into an array of hashes
+
+        """
         config = ConfigParser()
-        config.readfp(open(PROG_ROOT + '/../config/' + OFFENDERS_FILE))
+        config.readfp(open(CONFIG_ROOT + OFFENDERS_FILE))
 
         for user in config.sections():
             self.offenders[user] = {
@@ -80,6 +108,12 @@ class Mugshot:
 
 
     def update_status(self):
+        """Update the status window
+
+        Retrieves the build status and sends this to the Window object. This
+        can be called from within Mugshot or Window
+
+        """
         if self.status is None:
             # Something is wrong, it should never get here
             print 'ERROR, ERROR: self.status is None...this should not happen'
@@ -101,6 +135,12 @@ class Mugshot:
 
 
     def get_status(self):
+        """Retreives the status from the CI server
+
+        Hits the URL for the RSS feed from Cruise and parses out the status of
+        the build and the offender, if it is broken
+
+        """
         # TODO: If multiple checkins are built together, there might be
         # multiple regex matches. Hopefully the regex is not greedy
         cruise_rss = urllib.urlopen(CRUISE_URL)
@@ -137,7 +177,38 @@ class Mugshot:
         }
 
 
+    def get_image(self, status):
+        """Return a random image for the status
+
+        Arguments:
+        status -- a string representing the status
+
+        Returns:
+        A string representing the image
+
+        """
+        # TODO: this should use the internal self.status instead of accepting a
+        #       status argument
+        key = 'load'
+
+        if status:
+            if status == 'success':
+                key = 'success'
+            elif status == 'failed':
+                key = 'fail'
+        else:
+            # Get the value from self
+            pass
+
+        return random.choice(self.options[key + '_images'])
+
+
     def demo(self):
+        """Plays a short demo
+
+        Loops through all of the offenders and displays their mugshots briefly
+
+        """
         #for offender in self.offenders:
             #self.window.change_status('*DEMO MODE*', 'failed', offender)
             #sleep(2)

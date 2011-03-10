@@ -8,9 +8,9 @@ from os import path
 
 PROG_ROOT = path.dirname(path.realpath(__file__))
 IMAGE_ROOT = PROG_ROOT + '/../images/'
-SUCCESS_IMAGE = 'tick.png'
-LOAD_IMAGE = 'refresh.png'
-FAIL_IMAGE = 'cross.png'
+#SUCCESS_IMAGE = 'tick.png'
+#LOAD_IMAGE = 'refresh.png'
+#FAIL_IMAGE = 'cross.png'
 REFRESH_RATE = 60 # seconds
 
 # Define colors
@@ -29,7 +29,6 @@ class MugshotWindow:
             the MugShot class.
 
         """
-
         # Make a reference back to the calling object so that we can 
         # interact with it.
         self.obj = obj
@@ -126,11 +125,19 @@ class MugshotWindow:
 
 
     def destroy(self, widget, data=None):
+        """Destroy the window
+
+        """
         print "destroy signal occurred"
         gtk.main_quit()
 
 
     def reload(self, widget, data=None):
+        """Manually reload the window
+
+        Callback for the Reload button
+
+        """
         self.obj.update_status()
 
 
@@ -161,7 +168,7 @@ class MugshotWindow:
                 name = "Broken by: %s" % name
             except KeyError:
                 name = 'Manually Requested Build'
-                image = FAIL_IMAGE
+                image = self.obj.get_image('failed')
 
             self.mug.set_from_file(IMAGE_ROOT + image)
             self.offender_label.set_text(name)
@@ -171,7 +178,7 @@ class MugshotWindow:
             # a success graphic
             self.window.modify_bg(gtk.STATE_NORMAL, GREEN) # green
 
-            self.mug.set_from_file(IMAGE_ROOT + SUCCESS_IMAGE)
+            self.mug.set_from_file(IMAGE_ROOT + self.obj.get_image('success'))
             self.offender_label.set_text('')
 
         else:
@@ -179,7 +186,7 @@ class MugshotWindow:
             # color and display some loading graphic
             self.window.modify_bg() # default
 
-            self.mug.set_from_file(IMAGE_ROOT + LOADING_IMAGE)
+            self.mug.set_from_file(IMAGE_ROOT + self.obj.get_image('load'))
             self.offender_label.set_text('')
 
             print 'WARNING: No status in Window#change_status!'
