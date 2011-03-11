@@ -76,7 +76,7 @@ class Mugshot:
         print sections
 
         if 'settings' in sections:
-            CRUISE_URL = config.get('settings', 'cruise_url')
+            CRUISE_URL = 'http://' + config.get('settings', 'cruise_url')
 
         if 'images' in sections:
             self.options['success_images'] = config.get('images', 'success').split(',')

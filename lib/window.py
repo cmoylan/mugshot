@@ -11,7 +11,7 @@ IMAGE_ROOT = PROG_ROOT + '/../images/'
 #SUCCESS_IMAGE = 'tick.png'
 #LOAD_IMAGE = 'refresh.png'
 #FAIL_IMAGE = 'cross.png'
-REFRESH_RATE = 60 # seconds
+REFRESH_RATE = 10 # seconds
 
 # Define colors
 BLACK = gtk.gdk.color_parse('#000')
@@ -63,7 +63,7 @@ class MugshotWindow:
 
         # Row 3 --- image which will display the mugshot
         self.mug = gtk.Image()
-        self.mug.set_from_file(IMAGE_ROOT + LOAD_IMAGE)
+        self.mug.set_from_file(IMAGE_ROOT + self.obj.get_image('load'))
         # TODO: get all this scaling crap working
         #self.load_image = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB)
         #gtk.gdk.pixbuf_new_from_file(PROG_ROOT + '/../images/' + LOAD_IMAGE) \
