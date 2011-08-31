@@ -1,7 +1,7 @@
 from ConfigParser import ConfigParser
 from window import MugshotWindow
 from os import path
-import urllib
+import urllib2
 import xml.etree.ElementTree as ElementTree
 import re
 import random
@@ -143,7 +143,15 @@ class Mugshot:
         """
         # TODO: If multiple checkins are built together, there might be
         # multiple regex matches. Hopefully the regex is not greedy
-        cruise_rss = urllib.urlopen(CRUISE_URL)
+        try:
+            cruise_rss = urllib2.urlopen(CRUISE_URL)
+        except urllib2.URLError:
+            return {
+                'build': '',
+                'status': 'reloading',
+                'offender': 'reloading',
+            }
+
         cruise_xml = ElementTree.XML(cruise_rss.read())
 
         # Path to the correct XML nodes. Individual implementations may vary

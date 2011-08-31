@@ -17,6 +17,7 @@ REFRESH_RATE = 10 # seconds
 BLACK = gtk.gdk.color_parse('#000')
 RED = gtk.gdk.color_parse('#ff0000')
 GREEN = gtk.gdk.color_parse('#00ff00')
+BLUE = gtk.gdk.color_parse('#7ed0f6')
 
 
 class MugshotWindow:
@@ -184,7 +185,7 @@ class MugshotWindow:
         else:
             # If we get here, it's loading or something went wrong. Reset window
             # color and display some loading graphic
-            self.window.modify_bg() # default
+            self.window.modify_bg(gtk.STATE_NORMAL, BLUE) # default
 
             self.mug.set_from_file(IMAGE_ROOT + self.obj.get_image('load'))
             self.offender_label.set_text('')
